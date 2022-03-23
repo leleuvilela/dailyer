@@ -5,10 +5,13 @@ import { getCookie, setCookies } from 'cookies-next';
 import Head from 'next/head';
 import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+  const [colorScheme, setColorScheme] = useState<ColorScheme>('dark');
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -24,13 +27,15 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
         <link rel="shortcut icon" href="/favicon.svg" />
       </Head>
 
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
-          <NotificationsProvider>
-            <Component {...pageProps} />
-          </NotificationsProvider>
-        </MantineProvider>
-      </ColorSchemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+          <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+            <NotificationsProvider>
+              <Component {...pageProps} />
+            </NotificationsProvider>
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </QueryClientProvider>
     </>
   );
 }
